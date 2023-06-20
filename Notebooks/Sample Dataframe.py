@@ -9,3 +9,4 @@ diamonds = (spark.read
 
 diamonds.write.format("delta").mode("overwrite").save("/mnt/delta/diamonds")
 
+#testing line added
