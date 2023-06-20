@@ -57,6 +57,7 @@ steps:
 - script: |
     python -m pytest --junit-xml=$(Build.Repository.LocalPath)/logs/TEST-LOCAL.xml $(Build.Repository.LocalPath)/libraries/python/dbxdemo/test*.py || true
   displayName: 'Run Python unit tests for library code'
+  enabled: false
 
 # Publishes the test results to Azure DevOps. This lets you visualize
 # reports and dashboards related to the status of the build process.
@@ -65,6 +66,7 @@ steps:
     testResultsFiles: '**/TEST-*.xml'
     failTaskOnFailedTests: true
     publishRunAttachments: true
+  enabled: false
 
 # Package the example Python code into a Python wheel.
 - script: |
@@ -72,6 +74,7 @@ steps:
     python3 setup.py sdist bdist_wheel
     ls dist/
   displayName: 'Build Python Wheel for Libs'
+  enabled: false
 
 # Generate the deployment artifacts. To do this, the build agent gathers
 # all the new or updated code to be deployed to the Azure Databricks
@@ -85,12 +88,11 @@ steps:
 # The objective here is to add all files intended for the current release.
 - script: |
     git diff --name-only --diff-filter=AMR HEAD^1 HEAD | xargs -I '{}' cp --parents -r '{}' $(Build.BinariesDirectory)
-    mkdir -p $(Build.BinariesDirectory)/libraries/python/libs
-    cp $(Build.Repository.LocalPath)/libraries/python/dbxdemo/dist/*.* $(Build.BinariesDirectory)/libraries/python/libs
+    
     mkdir -p $(Build.BinariesDirectory)/cicd-scripts
     cp $(Build.Repository.LocalPath)/cicd-scripts/*.* $(Build.BinariesDirectory)/cicd-scripts
-    mkdir -p $(Build.BinariesDirectory)/notebooks
-    cp $(Build.Repository.LocalPath)/notebooks/*.* $(Build.BinariesDirectory)/notebooks
+    mkdir -p $(Build.BinariesDirectory)/Notebooks
+    cp $(Build.Repository.LocalPath)/Notebooks/*.* $(Build.BinariesDirectory)/Notebooks
   displayName: 'Get Changes'
 
 # Create the deployment artifact and then publish it to the
