@@ -2,6 +2,7 @@
 # In this case, new code merged into the release branch initiates a new build.
 trigger:
 - Releases/*
+- develop
 - main
 
 # Specify the operating system for the agent that runs on the Azure virtual
