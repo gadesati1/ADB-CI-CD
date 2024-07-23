@@ -1,10 +1,18 @@
 name: Notebook-Deployment-Databricks
 on:
   workflow_call:
+   inputs:
+      target_Environment:
+        description: Environment to Deploy
+        type: string
+        required: true
 
 jobs:
   push_to_db:
+    name: Deploying to ${{ inputs.target_Environment }}
     runs-on: ubuntu-latest
+    environment:
+     name: ${{ inputs.target_Environment }}
       
     steps:
       - name: Checkout current repository
