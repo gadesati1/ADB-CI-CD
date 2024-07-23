@@ -1,0 +1,43 @@
+name: Notebook-Deployment-Databricks
+on:
+  workflow_call:
+
+jobs:
+  push_to_db:
+    runs-on: ubuntu-latest
+      
+    steps:
+      - name: Checkout current repository
+        uses: actions/checkout@v4
+      
+      - name: Set up python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      - name: Azure Login
+        uses: Azure/login@v1.4.3
+        with:
+          # Paste output of `az ad sp create-for-rbac` as value of secret variable: AZURE_CREDENTIALS
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          
+      - name: Databricks CLI config
+        run: |
+            pip install databricks-cli 
+            DATABRICKS_TOKEN=$(az account get-access-token --resource 2ff814a6-3304-4ab8-85cb-cd0e6f879c1d --query "accessToken" --output tsv)
+            cat > ~/.databrickscfg << EOF 
+            [DEFAULT] 
+            host = ${{ secrets.DATABRICKS_HOST_URL }} 
+            token = $DATABRICKS_TOKEN 
+            jobs-api-version = 2.1 
+            EOF 
+    
+      - name: Deploy code to databricks workspace
+        uses: microsoft/databricks-import-notebook@v1.0.0
+        with:
+          # Databricks host
+          databricks-host: ${{ secrets.DATABRICKS_HOST_URL }}
+          # LOCAL_NOTEBOOKS_PATH
+          local-path: ${{ github.workspace }}/Notebooks
+          # REMOTE_NOTEBOOK_PATH
+          remote-path: ${{ vars.WORKSPACE_FOLDER }}
