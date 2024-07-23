@@ -10,10 +10,10 @@ jobs:
   deploy-to-DEV:
    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
    name: Deploy to Dev
-   uses: ${{ github.workspace }}/.github/workflows/deployment.yml@develop
+   uses: ./.github/workflows/deployment.yml
 
   deploy-to-PROD:
    if: github.ref == 'refs/heads/main'
    name: Deploy to Prod
-   uses: ${{ github.workspace }}/.github/workflows/deployment.yml@develop
+   uses: ./.github/workflows/deployment.yml
     
