@@ -33,12 +33,8 @@ jobs:
             pip install databricks-cli 
             dbToken=$(az account get-access-token --resource 2ff814a6-3304-4ab8-85cb-cd0e6f879c1d --query "accessToken" --output tsv)
             echo "DATABRICKS_TOKEN=$dbToken" >> $GITHUB_ENV
-            cat > ~/.databrickscfg << EOF 
-            [DEFAULT] 
-            host = ${{ secrets.DATABRICKS_HOST_URL }} 
-            token = ${{ env.DATABRICKS_TOKEN }}
-            jobs-api-version = 2.1 
-            EOF 
+            echo "${{ secrets.DATABRICKS_HOST_URL }}
+             ${{ env.DATABRICKS_TOKEN }}" | databricks configure --token
     
       - name: Deploy code to databricks workspace
         uses: microsoft/databricks-import-notebook@v1.0.0
