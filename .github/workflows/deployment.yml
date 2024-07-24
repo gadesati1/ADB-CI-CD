@@ -33,8 +33,8 @@ jobs:
       - name: Databricks CLI config
         run: |
             dbToken=$(az account get-access-token --resource 2ff814a6-3304-4ab8-85cb-cd0e6f879c1d --query "accessToken" --output tsv)
-            echo "DB Token is ${dbToken}"
-            echo "DATABRICKS_TOKEN=${dbToken}" >> $GITHUB_ENV
+            echo "DB Token is $dbToken" | xxd -ps
+            echo "DATABRICKS_TOKEN=$dbToken" >> $GITHUB_ENV
             cat > ~/.databrickscfg << EOF 
             [DEFAULT] 
             host = ${{ secrets.DATABRICKS_HOST_URL }} 
