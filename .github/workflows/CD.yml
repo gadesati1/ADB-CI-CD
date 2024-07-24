@@ -13,6 +13,7 @@ jobs:
    uses: ./.github/workflows/deployment.yml
    with:
      target_Environment: 'Dev'
+   secrets: inherit
 
   deploy-to-PROD:
    if: github.ref == 'refs/heads/main'
@@ -20,4 +21,5 @@ jobs:
    uses: ./.github/workflows/deployment.yml
    with:
      target_Environment: 'Prod'
+   secrets: inherit
     
