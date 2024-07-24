@@ -30,17 +30,23 @@ jobs:
 
       - name: install-databricks-cli
         uses: microsoft/install-databricks-cli@v1.0.0
-        env:
-         DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST_URL }}
-         DATABRICKS_CLIENT_ID: ${{ secrets.SP_NAME }}
-         DATABRICKS_CLIENT_SECRET: ${{ secrets.ADB_SP_TOKEN }}
+      - name: Databricks CLI config
+        run: |
+            dbToken=$(az account get-access-token --resource 2ff814a6-3304-4ab8-85cb-cd0e6f879c1d --query "accessToken" --output tsv)
+            echo "DB Token is ${dbToken}"
+            echo "DATABRICKS_TOKEN=${dbToken}" >> $GITHUB_ENV
+            cat > ~/.databrickscfg << EOF 
+            [DEFAULT] 
+            host = ${{ secrets.DATABRICKS_HOST_URL }} 
+            token = ${{ env.DATABRICKS_TOKEN }}
+            jobs-api-version = 2.1 
+            EOF
 
       - name: Deploy code to databricks workspace
         uses: microsoft/databricks-import-notebook@v1.0.0
         with:
           # Databricks host
           databricks-host: ${{ secrets.DATABRICKS_HOST_URL }}
-          databricks-token: ${{ secrets.ADB_SP_TOKEN }}
           # LOCAL_NOTEBOOKS_PATH
           local-path: ${{ github.workspace }}/Notebooks/R2R
           # REMOTE_NOTEBOOK_PATH
