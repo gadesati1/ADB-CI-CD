@@ -35,6 +35,7 @@ jobs:
             echo "DATABRICKS_TOKEN=$dbToken" >> $GITHUB_ENV
             echo "${{ secrets.DATABRICKS_HOST_URL }}
              ${{ env.DATABRICKS_TOKEN }}" | databricks configure --token
+            databricks workspace import_dir ${{ github.workspace }}/Notebooks ${{ vars.WORKSPACE_FOLDER }} --exclude-hidden-files --overwrite
     
       - name: Deploy code to databricks workspace
         uses: microsoft/databricks-import-notebook@v1.0.0
