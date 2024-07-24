@@ -42,6 +42,6 @@ jobs:
           databricks-host: ${{ secrets.DATABRICKS_HOST_URL }}
           databricks-token: ${{ secrets.ADB_SP_TOKEN }}
           # LOCAL_NOTEBOOKS_PATH
-          local-path: ${{ github.workspace }}/Notebooks
+          local-path: ${{ github.workspace }}/Notebooks/R2R
           # REMOTE_NOTEBOOK_PATH
           remote-path: ${{ vars.WORKSPACE_FOLDER }}
