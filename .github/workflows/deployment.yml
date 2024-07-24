@@ -32,6 +32,7 @@ jobs:
         uses: microsoft/install-databricks-cli@v1.0.0
         env:
          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST_URL }}
+         DATABRICKS_CLIENT_ID: ${{ secrets.SP_NAME }}
          DATABRICKS_CLIENT_SECRET: ${{ secrets.ADB_SP_TOKEN }}
 
       - name: Deploy code to databricks workspace
