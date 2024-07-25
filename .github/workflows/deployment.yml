@@ -1,0 +1,43 @@
+name: Notebook-Deployment-Databricks
+on:
+  workflow_call:
+   inputs:
+      target_Environment:
+        description: Environment to Deploy
+        type: string
+        required: true
+
+jobs:
+  push_to_db:
+    name: Deploying to ${{ inputs.target_Environment }}
+    runs-on: ubuntu-latest
+    environment:
+     name: ${{ inputs.target_Environment }}
+      
+    steps:
+      - name: Checkout current repository
+        uses: actions/checkout@v4
+
+      - id: azure-resource-login
+        name: Getting ADB Access Token
+        uses: Azure/azure-resource-login-action@v1.0.0
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          resource-url: 2ff814a6-3304-4ab8-85cb-cd0e6f879c1d
+          
+      - name: install-databricks-cli
+        uses: microsoft/install-databricks-cli@v1.0.0
+      - name: set-databricks-token
+        run: | 
+          echo "DATABRICKS_TOKEN= ${{ steps.azure-resource-login.outputs.token }}" >> $GITHUB_ENV
+            
+      - name: Deploy code to databricks workspace
+        uses: microsoft/databricks-import-notebook@v1.0.0
+        with:
+          # Databricks host
+          databricks-host: ${{ secrets.DATABRICKS_HOST_URL }}
+          databricks-token: ${{ env.DATABRICKS_TOKEN }}
+          # LOCAL_NOTEBOOKS_PATH
+          local-path: ${{ github.workspace }}/Notebooks
+          # REMOTE_NOTEBOOK_PATH
+          remote-path: ${{ vars.WORKSPACE_FOLDER }}

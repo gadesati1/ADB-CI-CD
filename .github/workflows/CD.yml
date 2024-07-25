@@ -1,0 +1,26 @@
+name: ADB-CD
+
+on: 
+  push:
+    branches: [ main ]
+  
+  workflow_dispatch:
+
+jobs:
+  deploy-to-DEV:
+   if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+   name: Deploy to Dev
+   uses: ./.github/workflows/deployment.yml
+   with:
+     target_Environment: 'Dev'
+   secrets: inherit
+
+  deploy-to-PROD:
+   needs: deploy-to-DEV
+   if: github.ref == 'refs/heads/main'
+   name: Deploy to Prod
+   uses: ./.github/workflows/deployment.yml
+   with:
+     target_Environment: 'Prod'
+   secrets: inherit
+    
