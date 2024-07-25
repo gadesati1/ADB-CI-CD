@@ -16,6 +16,7 @@ jobs:
    secrets: inherit
 
   deploy-to-PROD:
+   needs: deploy-to-DEV
    if: github.ref == 'refs/heads/main'
    name: Deploy to Prod
    uses: ./.github/workflows/deployment.yml
