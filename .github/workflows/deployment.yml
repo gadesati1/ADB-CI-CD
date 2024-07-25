@@ -17,11 +17,13 @@ jobs:
     steps:
       - name: Checkout current repository
         uses: actions/checkout@v4
-      
-      - name: Azure Login
-        uses: Azure/login@v2
+
+      - id: adb-login
+        name: Adquiring ADB Access Token
+        uses: Azure/azure-resource-login-action@v1.0.0
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+          resource-url: 2ff814a6-3304-4ab8-85cb-cd0e6f879c1d
           
       - name: Set up python
         uses: actions/setup-python@v4
@@ -32,13 +34,12 @@ jobs:
         uses: microsoft/install-databricks-cli@v1.0.0
       - name: Databricks CLI config
         run: |
-            dbToken=$(az account get-access-token --resource 2ff814a6-3304-4ab8-85cb-cd0e6f879c1d --query "accessToken" --output tsv)
-            echo "DB Token is $dbToken" | xxd -ps
-            echo "DATABRICKS_TOKEN=$dbToken" >> $GITHUB_ENV
+            
+            echo "DB Token is ${{ steps.adb-login.outputs.token }}" | xxd -ps
             cat > ~/.databrickscfg << EOF 
             [DEFAULT] 
             host = ${{ secrets.DATABRICKS_HOST_URL }} 
-            token = ${{ env.DATABRICKS_TOKEN }}
+            token = ${{ steps.adb-login.outputs.token }}
             jobs-api-version = 2.1 
             EOF
 
