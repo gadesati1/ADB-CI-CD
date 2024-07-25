@@ -18,37 +18,26 @@ jobs:
       - name: Checkout current repository
         uses: actions/checkout@v4
 
-      - id: adb-login
-        name: Adquiring ADB Access Token
+      - id: azure-resource-login
+        name: Getting ADB Access Token
         uses: Azure/azure-resource-login-action@v1.0.0
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
           resource-url: 2ff814a6-3304-4ab8-85cb-cd0e6f879c1d
           
-      - name: Set up python
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.9
-
       - name: install-databricks-cli
         uses: microsoft/install-databricks-cli@v1.0.0
-      - name: Databricks CLI config
-        run: |
+      - name: set-databricks-token
+        run: | 
+          echo "DATABRICKS_TOKEN= ${{ steps.azure-resource-login.outputs.token }}" >> $GITHUB_ENV
             
-            echo "DB Token is ${{ steps.adb-login.outputs.token }}" | xxd -ps
-            cat > ~/.databrickscfg << EOF 
-            [DEFAULT] 
-            host = ${{ secrets.DATABRICKS_HOST_URL }} 
-            token = ${{ steps.adb-login.outputs.token }}
-            jobs-api-version = 2.1 
-            EOF
-
       - name: Deploy code to databricks workspace
         uses: microsoft/databricks-import-notebook@v1.0.0
         with:
           # Databricks host
           databricks-host: ${{ secrets.DATABRICKS_HOST_URL }}
+          databricks-token: ${{ env.DATABRICKS_TOKEN }}
           # LOCAL_NOTEBOOKS_PATH
-          local-path: ${{ github.workspace }}/Notebooks/R2R
+          local-path: ${{ github.workspace }}/Notebooks
           # REMOTE_NOTEBOOK_PATH
           remote-path: ${{ vars.WORKSPACE_FOLDER }}
